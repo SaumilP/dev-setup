@@ -1,0 +1,47 @@
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version.
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # General virtualbox settings.
+  config.vm.provider :virtualbox do |vb|
+    vb.name = "JavaeeWildflyDev"
+  end
+
+  # General server configuration. 
+  config.vm.box = "debian/jessie64"
+  config.vm.box_url = "https://atlas.hashicorp.com/debian/boxes/jessie64"
+  config.vm.host_name = "javaee-wildfly-dev"
+
+  # Use vagrant-cachier plugin to cache downloaded files.
+  # Installation: vagrant plugin install vagrant-cachier
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # Cache downloads between the same base box
+    config.cache.scope = :box
+  end
+
+  # Adjust box memory size
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--memory", 2048]
+  end
+
+  # Define port forwarding for the application service, ...
+  config.vm.network :forwarded_port, host: 9994, guest: 9994
+
+  # ... wildfly server ...
+  config.vm.network :forwarded_port, host: 8080, guest: 8080
+
+  # Expose Wildfly server as another node
+  # config.vm.network "private_network", ip: "10.0.0.100", type: "dhcp", auto_config: true
+
+  # Execute server setup scripts
+  config.vm.provision "shell", path: "scripts/boxUpdate.sh"
+  config.vm.provision :reload 
+  config.vm.provision "shell", path: "scripts/openJdk.sh"
+  config.vm.provision "shell", path: "scripts/wildfly.sh"
+  config.vm.provision "shell", path: "scripts/boxCleanup.sh"
+  config.vm.provision "shell", path: "scripts/conclusion.sh"  
+end

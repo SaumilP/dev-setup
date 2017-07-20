@@ -22,6 +22,7 @@ JBoss Wildfly setup for dev environment.
 Before you can start using this project, you have to install the vagrant-reload plugin:
 ```bash
 $ vagrant plugin install vagrant-reload
+$ vagrant plugin install vagrant-vbguest
 ```
 
 In order to check if it was installed succesfull or if it is already installed, you can execute the following command:
